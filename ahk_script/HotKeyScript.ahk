@@ -17,8 +17,8 @@ vk1C & l::Send, #{Right}        ; 右寄せ
 vk1C & k::Send, #{Down}         ; 最小化
 
 ; 仮想デスクトップ切り替え
-vk1C & f::Send, #^{Right}
-vk1C & d::Send, #^{Left}
+vk1D & r::Send, #^{Right}
+vk1D & e::Send, #^{Left}
 
 ;無変換+jkil = 上下左右
 ;無変換+shift+上下左右 = shift+上下左右
