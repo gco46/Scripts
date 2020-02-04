@@ -100,3 +100,38 @@ Sub ExportAll()
 CONTINUE:
     Next
 End Sub
+
+
+Sub PasteWithoutBlankCells()
+'
+' 結合セルの空白部分を除いて、コピー範囲のセルをペーストする
+' 単一列のペーストのみ対応
+'
+    Dim data_obj As New DataObject      ' クリップボード参照の為のDataObject
+    Dim cbFormat As Variant
+    Dim cells_array As Variant          ' コピーセル範囲内の値を要素とする配列
+    Dim i As Long                       ' ループカウンタ
+    Dim paste_index As Long             ' ペースト先セルのindex(選択セルを基準に移動)
+    
+    paste_index = 0
+    ' クリップボードのデータがテキスト以外ならば終了
+    cbFormat = Application.ClipboardFormats
+    If cbFormat(1) <> 0 Then
+        Exit Sub
+    End If
+    
+    
+    ' コピーセル範囲の値を配列化
+    data_obj.GetFromClipboard
+    cells_array = Split(data_obj.GetText, vbCrLf)
+    
+    ' 選択セルを基準に値をペースト
+    For i = 0 To UBound(cells_array)
+        ' 値の入ったセルのみペースト
+        If cells_array(i) <> "" Then
+            Selection.Offset(paste_index, 0).Value = cells_array(i)
+            paste_index = paste_index + 1
+        End If
+    Next
+    
+End Sub
