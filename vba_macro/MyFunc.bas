@@ -1,8 +1,18 @@
 Attribute VB_Name = "MyFunc"
 Option Explicit
 
+' ------------------- 下記関数は適用したいブックにコピーして使用する ------------------------------
+
 
 Function CONCAT(ParamArray par())
+'
+' 選択範囲のセルの文字列を結合する
+' 走査は水平→垂直
+' +input
+'       par() : object, セル範囲
+' +output
+'       セル範囲内の値を結合した文字列
+
   Dim i As Integer
   Dim tR As Range
   
@@ -18,34 +28,31 @@ Function CONCAT(ParamArray par())
   Next
 End Function
 
+
 Function StrReverseHex(a_str) As String
-    Dim sRev    As String
-    Dim i       As Long
-    Dim iLen    As Long
-    Dim sRet    As String
+'
+' リトルエンディアンの文字列をアドレス順に変換する
+' +input
+'       a_str : str, 長さ2nの文字列
+' +output
+'       変換後文字列
+
+    Dim address_order_hex As String     ' 出力用変数
+    Dim len_s As Long                   ' 引数文字列の長さ
+    Dim i As Long                       ' ループカウンタ
     
-    '// 引数文字列の文字列長を取得
-    iLen = Len(a_str)
+    address_order_hex = ""
+    len_s = Len(a_str)
     
-    '// 文字列長が偶数でない場合
-    If (iLen Mod 2) <> 0 Then
-        Debug.Print "２文字ずつの引数文字列でない"
-        Exit Function
+    ' 引数チェック
+    If (len_s Mod 2) <> 0 Then
+        Debug.Print "引数文字列の長さが2の倍数ではありません"
     End If
     
-    '// 引数文字列を反転
-    sRev = StrReverse(a_str)
-    
-    '// 戻り値文字列を初期化
-    sRet = ""
-    
-    '// ２文字ずつループ
-    For i = 1 To iLen Step 2
-        '// ２文字目を先に取得
-        sRet = sRet & Mid(sRev, i + 1, 1)
-        '// １文字目を後に取得
-        sRet = sRet & Mid(sRev, i, 1)
+    ' 先頭から2文字ずつ取得し、アドレス順に並び替え
+    For i = 1 To len_s Step 2
+        address_order_hex = Mid(a_str, i, 2) & address_order_hex
     Next
-    
-    StrReverseHex = sRet
+    StrReverseHex = address_order_hex
 End Function
+
