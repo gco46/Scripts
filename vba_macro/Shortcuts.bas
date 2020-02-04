@@ -1,22 +1,26 @@
-Attribute VB_Name = "ShortcutMacro"
+Attribute VB_Name = "Shortcuts"
 Option Explicit
 
 Sub ShowMultiBook()
 Attribute ShowMultiBook.VB_ProcData.VB_Invoke_Func = "A\n14"
+'
+' 開いているブックを横に並べて表示 (ctrl + shift + a)
+'
     Windows.Arrange ArrangeStyle:=xlArrangeStyleVertical
 End Sub
 
 Sub ShowOneBook()
 Attribute ShowOneBook.VB_ProcData.VB_Invoke_Func = "S\n14"
+'
+' アクティブなブックを全画面表示 (ctrl + shift + s)
+'
     ActiveWindow.WindowState = xlMaximized
 End Sub
 
 Sub ReDrawBorders()
 Attribute ReDrawBorders.VB_ProcData.VB_Invoke_Func = "q\n14"
 '
-' ReDrawBorders Macro
-'
-
+' 選択範囲のセルを囲うように罫線を引く (ctrl + q)
 '
     Selection.Borders(xlDiagonalDown).LineStyle = xlNone
     Selection.Borders(xlDiagonalUp).LineStyle = xlNone
@@ -60,7 +64,7 @@ End Sub
 Sub NoPaint()
 Attribute NoPaint.VB_ProcData.VB_Invoke_Func = "N\n14"
 '
-' NoPaint Macro
+' 選択セルを"塗りつぶしなし"にする (ctrl + shift + n)
 '
 
     With Selection.Interior
@@ -74,7 +78,7 @@ End Sub
 Sub YellowPaint()
 Attribute YellowPaint.VB_ProcData.VB_Invoke_Func = "Y\n14"
 '
-' Paint selected cells yellow
+' 選択セルを黄色に塗りつぶす (ctrl + shift + y)
 '
     With Selection.Interior
         .Pattern = xlSolid
@@ -86,13 +90,13 @@ Attribute YellowPaint.VB_ProcData.VB_Invoke_Func = "Y\n14"
 End Sub
 
 
-Sub AutoFitConcatCellHeight()
-Attribute AutoFitConcatCellHeight.VB_ProcData.VB_Invoke_Func = "R\n14"
+Sub AutoFitMergedCellsHeight()
+Attribute AutoFitMergedCellsHeight.VB_ProcData.VB_Invoke_Func = "R\n14"
 '
-' 結合セルの高さを自動調節
+' 結合セルの高さを自動調節 (ctrl + shift + r)
 ' Margin でセルの高さを調整可能
 '
-    Dim Margin                  As Integer      ' 自動調整時マージン
+    Dim Margin                  As Integer      ' 自動調整時マージン[px]
     Margin = 3
 
     Dim r                       As Range
@@ -114,10 +118,10 @@ Attribute AutoFitConcatCellHeight.VB_ProcData.VB_Invoke_Func = "R\n14"
     
     For Each r In Selection
         '// 結合時の幅を取得
-        iBondWidth = 結合セルの幅(r)
+        iBondWidth = GetWidthOfMergedCells(r)
         
         '// 結合時の各セルの高さを取得
-        Call 結合セルの高さを取得(r, iArRow)
+        Call GetHightOfMergedCells(r, iArRow)
         
         iArCount = UBound(sArCell)
         
@@ -134,7 +138,7 @@ Attribute AutoFitConcatCellHeight.VB_ProcData.VB_Invoke_Func = "R\n14"
         '// 配列内に現ループのセルがない場合（結合セルがループで変わった場合）
         If (bExistFlg = False) Then
             '// セル範囲の全セルを配列で取得
-            bRet = セル範囲の各セル座標を取得(r, sArCell)
+            bRet = GetAddressesOfMergedCells(r, sArCell)
         End If
         
         '// 結合セルの場合
@@ -166,104 +170,18 @@ Attribute AutoFitConcatCellHeight.VB_ProcData.VB_Invoke_Func = "R\n14"
             r.MergeArea.Item(1).ColumnWidth = iStartCellWidth
             
             '// 結合後のセルの高さを設定
-            Call 結合セルの高さを設定(r, iBeforeHeight, iArRow)
+            Call SetHightOfMergedCells(r, iBeforeHeight, iArRow)
         End If
     Next
     
     Application.ScreenUpdating = True
 End Sub
 
-Public Sub 結合セルの高さを取得(a_rRange As Range, a_iArRow())
-    Dim iRowCount
-    Dim i
-    
-    ReDim a_iArRow(0)
-    
-    iRowCount = a_rRange.MergeArea.Rows.Count
-    
-    For i = 1 To iRowCount
-        ReDim Preserve a_iArRow(i - 1)
-        a_iArRow(i - 1) = a_rRange.MergeArea.Rows(i).RowHeight
-    Next
-End Sub
-
-Public Function 結合セルの幅(a_rRange As Range)
-    Dim iColCount
-    Dim i
-    Dim iWidth
-    
-    iColCount = a_rRange.MergeArea.Columns.Count
-    iWidth = 0
-    
-    For i = 1 To iColCount
-        iWidth = iWidth + a_rRange.MergeArea.Item(i).ColumnWidth
-    Next
-    
-    結合セルの幅 = iWidth
-End Function
-
-Function セル範囲の各セル座標を取得(a_rRange As Range, a_sArCell() As String) As Boolean
-    Dim sAddress                        '// セル位置
-    Dim v
-    Dim sStartCell
-    Dim sEndCell
-    Dim iMergeCount
-    Dim i
-    
-    '// セル範囲取得
-    sAddress = a_rRange.MergeArea.Address(False, False, ReferenceStyle:=xlA1)
-    iMergeCount = a_rRange.MergeArea.Count
-    
-    For i = 0 To iMergeCount - 1
-        ReDim Preserve a_sArCell(i)
-        
-        '// Itemは1スタート
-        a_sArCell(i) = a_rRange.MergeArea.Item(i + 1).Address(False, False, ReferenceStyle:=xlA1)
-    Next
-    
-    セル範囲の各セル座標を取得 = True
-End Function
-
-Public Sub 結合セルの高さを設定(a_rRange As Range, a_iBeforeHeight, a_iArRow())
-    Dim iSumRow
-    Dim i
-    Dim iCount
-    Dim iFirstRow
-    Dim iRemainRow
-    
-    iSumRow = 0
-    iCount = UBound(a_iArRow)
-    
-    '// 単一行の場合
-    If (iCount = 0) Then
-        a_rRange.RowHeight = a_iBeforeHeight
-        Exit Sub
-    End If
-    
-    '// 以下複数行の場合
-    
-    For i = 0 To iCount
-        iSumRow = iSumRow + a_iArRow(i)
-    Next
-    
-    '// 先頭行の高さ
-    iFirstRow = a_iArRow(0)
-    '// 残りの行の高さ
-    iRemainRow = iSumRow - iFirstRow
-    
-    '// 結合時の高さが元の高さより高い場合
-    If (a_iBeforeHeight > iSumRow) Then
-        a_rRange.RowHeight = a_iBeforeHeight - iRemainRow
-    Else
-        a_rRange.RowHeight = iFirstRow
-    End If
-End Sub
-
 
 Sub AutoFill()
 Attribute AutoFill.VB_ProcData.VB_Invoke_Func = "F\n14"
 '
-' 選択セルの横列に合わせてオートフィル
+' 選択セルの横列に合わせてオートフィル (ctrl + shift + r)
 '
 
     Dim myClm As Integer
