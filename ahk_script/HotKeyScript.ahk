@@ -1,3 +1,8 @@
+; AutoHotKey設定値
+#HotkeyInterval, 1000
+#MaxHotkeysPerInterval, 200
+excel_hscroll_speed := 2
+
 ; ウィンドウを閉じる
 !q::Send, !{F4}
 
@@ -115,3 +120,21 @@ vk1D & d::Send, {F12}
 
 ; 右クリック
 vk1D & 0::Send, +{F10}
+
+; Excel 横スクロール
+#IfWinActive, ahk_exe EXCEL.EXE
+~LShift & WheelUp:: ; Scroll left.
+SetScrollLockState, On
+Loop, %excel_hscroll_speed%
+{
+    SendInput {Left}
+}
+SetScrollLockState, Off
+return
+~LShift & WheelDown:: ; Scroll right.
+SetScrollLockState, On
+Loop, %excel_hscroll_speed%
+{
+    SendInput {Right}
+}
+SetScrollLockState, Off
