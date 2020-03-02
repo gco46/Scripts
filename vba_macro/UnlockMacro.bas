@@ -1,6 +1,6 @@
 Attribute VB_Name = "UnlockMacro"
 Option Explicit
-' Excel 2010でのみ動作確認--------------------------------------------------
+' Excel 2010, 2016で動作確認--------------------------------------------------
 
 
 Private Const PAGE_EXECUTE_READWRITE = &H40
