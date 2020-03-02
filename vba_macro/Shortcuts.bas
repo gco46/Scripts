@@ -202,3 +202,46 @@ Attribute AutoFill.VB_ProcData.VB_Invoke_Func = "F\n14"
     ActiveSheet.Range(myRange1).AutoFill Destination:=ActiveSheet.Range(myRange2)
 
 End Sub
+
+
+Sub PasteWithoutBlankRowCells()
+Attribute PasteWithoutBlankRowCells.VB_ProcData.VB_Invoke_Func = "V\n14"
+'
+' 結合セルの空白部分を除いて、コピー範囲のセルをペーストする
+' 列方向結合に対応、複数列のコピーは不可 (ctrl + shift + v)
+'
+    Dim data_obj As New DataObject      ' クリップボード参照の為のDataObject
+    Dim cbFormat As Variant
+    Dim trimmed_txt As String           ' 空白文字等を削除した文字列用
+    Dim cells_array As Variant          ' コピーセル範囲内の値を要素とする配列
+    Dim i As Long                       ' ループカウンタ
+    Dim paste_index As Long             ' ペースト先セルのindex(選択セルを基準に移動)
+    
+    paste_index = 0
+    ' クリップボードのデータがテキスト以外ならば終了
+    cbFormat = Application.ClipboardFormats
+    If cbFormat(1) <> 0 Then
+        Exit Sub
+    End If
+    
+    
+    ' コピーセル範囲の値を配列化
+    data_obj.GetFromClipboard
+    ' クリップボードの文字列から空白文字等を削除し整形
+    trimmed_txt = Replace(data_obj.GetText, vbTab, "")
+    trimmed_txt = Replace(trimmed_txt, vbCr, "")
+    trimmed_txt = Replace(trimmed_txt, vbCrLf, "")
+    cells_array = Split(trimmed_txt, vbLf)
+
+    
+    ' 選択セルを基準に値をペースト
+    For i = 0 To UBound(cells_array) - 1
+        ' 値の入ったセルのみペースト
+        If cells_array(i) <> "" Then
+            ' 文字列としてセルに代入
+            Selection.Offset(paste_index, 0).Value = "'" & cells_array(i)
+            paste_index = paste_index + 1
+        End If
+    Next
+    
+End Sub
