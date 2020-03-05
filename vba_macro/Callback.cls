@@ -85,7 +85,7 @@ End Sub
 
 
 Sub fit_merged_cells_height()
-    Dim mergin                  As Integer
+    Dim margin                  As Integer
     Dim r                       As Range
     Dim iBondWidth                              '// 結合時のセル幅
     Dim iStartCellWidth                         '// 処理対象セルの幅
@@ -100,7 +100,7 @@ Sub fit_merged_cells_height()
     Dim iArRow()                                '// 複数行の結合時の各行の高さ
 
     ' セルの高さのマージン指定
-    mergin = HEIGHT_MERGIN
+    margin = HEIGHT_MERGIN
     
     ReDim sArCell(0)
     
