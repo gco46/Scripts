@@ -116,7 +116,13 @@ vk1C & ^::Send, {F12}
 
 ; 左手用Functionキー
 vk1D & f::Send, {F11}
-vk1D & d::Send, {F12}
+vk1D & d::
+    if GetKeyState("shift", "P"){
+        Send, +{F12}
+    }else{
+        Send, {F12}
+    }
+    return
 
 ; 右クリック
 vk1D & 0::Send, +{F10}
