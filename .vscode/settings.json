@@ -1,0 +1,10 @@
+{
+    // VBAファイルはshiftjisのみ対応
+    "files.associations": {
+        "*.bas": "vba",
+        "*.cls": "vba",
+    },
+    "[vba]": {
+        "files.encoding": "shiftjis"
+    }
+}
