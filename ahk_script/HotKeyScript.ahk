@@ -1,34 +1,34 @@
-; AutoHotKeyİ’è’l
+; AutoHotKeyè¨­å®šå€¤
 #HotkeyInterval, 1000
 #MaxHotkeysPerInterval, 200
 excel_hscroll_speed := 2
 
-; ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚é
+; ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹
 !q::Send, !{F4}
 
-; Chrome“™Ai‚ŞE–ß‚é—pİ’è
+; Chromeç­‰ã€é€²ã‚€ãƒ»æˆ»ã‚‹ç”¨è¨­å®š
 vk1D & ,::Send, !{Left}
 vk1D & .::Send, !{Right}
 
-; ƒAƒ“ƒ_[ƒXƒRƒA
+; ã‚¢ãƒ³ãƒ€ãƒ¼ã‚¹ã‚³ã‚¢
 vkE2:: +vkE2
 
-; ƒEƒBƒ“ƒhƒEˆÚ“®
+; ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç§»å‹•
 vk1C & Tab::Send, #+{Right}
-; ƒEƒBƒ“ƒhƒE‘€ì
-vk1C & i::Send, #{Up}           ; Å‘å‰»
-vk1C & j::Send, #{Left}         ; ¶Šñ‚¹
-vk1C & l::Send, #{Right}        ; ‰EŠñ‚¹
-vk1C & k::Send, #{Down}         ; Å¬‰»
+; ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ“ä½œ
+vk1C & i::Send, #{Up}           ; æœ€å¤§åŒ–
+vk1C & j::Send, #{Left}         ; å·¦å¯„ã›
+vk1C & l::Send, #{Right}        ; å³å¯„ã›
+vk1C & k::Send, #{Down}         ; æœ€å°åŒ–
 
-; ‰¼‘zƒfƒXƒNƒgƒbƒvØ‚è‘Ö‚¦
+; ä»®æƒ³ãƒ‡ã‚¹ã‚¯ãƒˆãƒƒãƒ—åˆ‡ã‚Šæ›¿ãˆ
 vk1D & r::Send, #^{Right}
 vk1D & e::Send, #^{Left}
 
-;–³•ÏŠ·+jkil = ã‰º¶‰E
-;–³•ÏŠ·+shift+ã‰º¶‰E = shift+ã‰º¶‰E
+;ç„¡å¤‰æ›+jkil = ä¸Šä¸‹å·¦å³
+;ç„¡å¤‰æ›+shift+ä¸Šä¸‹å·¦å³ = shift+ä¸Šä¸‹å·¦å³
 
-;–³•ÏŠ·+j¨¶
+;ç„¡å¤‰æ›+jâ†’å·¦
 vk1D & j::
     if GetKeyState("shift", "P") && GetKeyState("ctrl", "P"){
         Send, +^{Left}
@@ -40,7 +40,7 @@ vk1D & j::
         Send, {Left}
     }
     return
-;–³•ÏŠ·+i¨ã
+;ç„¡å¤‰æ›+iâ†’ä¸Š
 vk1D & i::
     if GetKeyState("shift", "P") && GetKeyState("ctrl", "P"){
         Send, +^{Up}
@@ -52,7 +52,7 @@ vk1D & i::
         Send, {Up}
     }
     return
-;–³•ÏŠ·+k¨‰º
+;ç„¡å¤‰æ›+kâ†’ä¸‹
 vk1D & k::
     if GetKeyState("shift", "P") && GetKeyState("ctrl", "P"){
         Send, +^{Down}
@@ -66,7 +66,7 @@ vk1D & k::
         Send, {Down}
     }
     return
-;–³•ÏŠ·+l¨‰E
+;ç„¡å¤‰æ›+lâ†’å³
 vk1D & l::
     if GetKeyState("shift", "P") && GetKeyState("ctrl", "P"){
         Send, +^{Right}
@@ -97,7 +97,7 @@ vk1D & o::
     }
     return
 
-; ƒtƒ@ƒ“ƒNƒVƒ‡ƒ“ƒL[’u‚«Š·‚¦
+; ãƒ•ã‚¡ãƒ³ã‚¯ã‚·ãƒ§ãƒ³ã‚­ãƒ¼ç½®ãæ›ãˆ
 vk1C & 1::
     if GetKeyState("ctrl", "P"){
         Send, ^{F1}
@@ -108,13 +108,13 @@ vk1C & 2::Send, {F2}
 vk1C & 3::Send, {}
 vk1C & 4::Send, {F4}
 vk1C & 5::Send, {F5}
-vk1C & 7::Send, {F7}    ; ‘SŠpƒJƒi
-vk1C & 8::Send, {F8}    ; ”¼ŠpƒJƒi
-vk1C & 0::Send, {F10}   ; ”¼Šp‰p”
+vk1C & 7::Send, {F7}    ; å…¨è§’ã‚«ãƒŠ
+vk1C & 8::Send, {F8}    ; åŠè§’ã‚«ãƒŠ
+vk1C & 0::Send, {F10}   ; åŠè§’è‹±æ•°
 vk1C & -::Send, {F11}
 vk1C & ^::Send, {F12}
 
-; ¶è—pFunctionƒL[
+; å·¦æ‰‹ç”¨Functionã‚­ãƒ¼
 vk1D & f::Send, {F11}
 vk1D & d::
     if GetKeyState("shift", "P"){
@@ -124,10 +124,10 @@ vk1D & d::
     }
     return
 
-; ‰EƒNƒŠƒbƒN
+; å³ã‚¯ãƒªãƒƒã‚¯
 vk1D & 0::Send, +{F10}
 
-; Excel ‰¡ƒXƒNƒ[ƒ‹
+; Excel æ¨ªã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
 #IfWinActive, ahk_exe EXCEL.EXE
 ~LShift & WheelUp:: ; Scroll left.
 SetScrollLockState, On
