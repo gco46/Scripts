@@ -1,3 +1,48 @@
+
+; Initialize ensuring Google Drive shell context are disabled.
+setRegistry(false)
+
+; Also clean up when exiting.
+OnExit("exitFunc")
+
+; Don't bother executing any hooks below at all unless actually in Explorer.
+#IfWinActive, ahk_exe HmFilerClassic.exe
+{
+    ; Register shift key hooks.
+    ~LShift::
+        setRegistry(true)
+    return
+
+    ~LShift Up::
+        setRegistry(false)
+    return
+
+
+    setRegistry(enable) {
+        prefix:="-"
+        if (enable) {
+            prefix:=""
+        }
+        
+        ; The extra comma in parameter list is an empty value for the "(Default)" value for the key (as you'd see it in regedit).
+        ; See: https://autohotkey.com/docs/commands/RegWrite.htm
+        
+        ; Directories
+        RegWrite, REG_SZ, HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\GDContextMenu, , %prefix%{BB02B294-8425-42E5-983F-41A1FA970CD6}
+        RegWrite, REG_SZ, HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\DriveFS 28 or later, , %prefix%{EE15C2BD-CECB-49F8-A113-CA1BFC528F5B}
+        
+        ; Files
+        RegWrite, REG_SZ, HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\GDContextMenu, , %prefix%{BB02B294-8425-42E5-983F-41A1FA970CD6}
+        RegWrite, REG_SZ, HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\DriveFS 28 or later, , %prefix%{EE15C2BD-CECB-49F8-A113-CA1BFC528F5B}
+    }
+}
+; Reverts back to enabling drive on exit.
+exitFunc() {
+    setRegistry(true)
+    ExitApp
+}
+
+
 ; AutoHotKey設定値
 #HotkeyInterval, 1000
 #MaxHotkeysPerInterval, 200
@@ -129,18 +174,22 @@ vk1D & 0::Send, +{F10}
 
 ; Excel 横スクロール
 #IfWinActive, ahk_exe EXCEL.EXE
-~LShift & WheelUp:: ; Scroll left.
-SetScrollLockState, On
-Loop, %excel_hscroll_speed%
 {
-    SendInput {Left}
+    ~LShift & WheelUp:: ; Scroll left.
+        SetScrollLockState, On
+        Loop, %excel_hscroll_speed%
+        {
+            SendInput {Left}
+        }
+        SetScrollLockState, Off
+        return
+
+    ~LShift & WheelDown:: ; Scroll right.
+        SetScrollLockState, On
+        Loop, %excel_hscroll_speed%
+        {
+            SendInput {Right}
+        }
+        SetScrollLockState, Off
+        return
 }
-SetScrollLockState, Off
-return
-~LShift & WheelDown:: ; Scroll right.
-SetScrollLockState, On
-Loop, %excel_hscroll_speed%
-{
-    SendInput {Right}
-}
-SetScrollLockState, Off
