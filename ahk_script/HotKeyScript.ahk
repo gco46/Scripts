@@ -41,6 +41,7 @@ exitFunc() {
     setRegistry(true)
     ExitApp
 }
+#IfWinActive
 
 
 ; AutoHotKey設定値
@@ -171,25 +172,3 @@ vk1D & d::
 
 ; 右クリック
 vk1D & 0::Send, +{F10}
-
-; Excel 横スクロール
-#IfWinActive, ahk_exe EXCEL.EXE
-{
-    ~LShift & WheelUp:: ; Scroll left.
-        SetScrollLockState, On
-        Loop, %excel_hscroll_speed%
-        {
-            SendInput {Left}
-        }
-        SetScrollLockState, Off
-        return
-
-    ~LShift & WheelDown:: ; Scroll right.
-        SetScrollLockState, On
-        Loop, %excel_hscroll_speed%
-        {
-            SendInput {Right}
-        }
-        SetScrollLockState, Off
-        return
-}
