@@ -36,12 +36,13 @@ OnExit("exitFunc")
         RegWrite, REG_SZ, HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\DriveFS 28 or later, , %prefix%{EE15C2BD-CECB-49F8-A113-CA1BFC528F5B}
     }
 }
+#IfWinActive
+
 ; Reverts back to enabling drive on exit.
 exitFunc() {
     setRegistry(true)
     ExitApp
 }
-#IfWinActive
 
 
 ; AutoHotKey設定値
