@@ -1,18 +1,16 @@
 
-; Initialize ensuring Google Drive shell context are disabled.
+; 初期状態でGoogle Driveコンテキストメニューは無効
 setRegistry(false)
 
-; Also clean up when exiting.
-OnExit("exitFunc")
-
-; Don't bother executing any hooks below at all unless actually in Explorer.
+; エクスプローラがアクティブの時のみ有効
 #IfWinActive, ahk_exe HmFilerClassic.exe
 {
-    ; Register shift key hooks.
+    ; 左シフト押下時にレジストリ有効
     ~LShift::
         setRegistry(true)
     return
 
+    ; 左シフトを離したときにレジストリ無効
     ~LShift Up::
         setRegistry(false)
     return
@@ -23,20 +21,22 @@ OnExit("exitFunc")
         if (enable) {
             prefix:=""
         }
+
+        ; (既定)キーに対して書き込み, -{値}でコンテキストメニュー無効化
         
-        ; The extra comma in parameter list is an empty value for the "(Default)" value for the key (as you'd see it in regedit).
-        ; See: https://autohotkey.com/docs/commands/RegWrite.htm
-        
-        ; Directories
+        ; ディレクトリのコンテキストメニュー設定
         RegWrite, REG_SZ, HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\GDContextMenu, , %prefix%{BB02B294-8425-42E5-983F-41A1FA970CD6}
         RegWrite, REG_SZ, HKEY_CLASSES_ROOT\Directory\shellex\ContextMenuHandlers\DriveFS 28 or later, , %prefix%{EE15C2BD-CECB-49F8-A113-CA1BFC528F5B}
         
-        ; Files
+        ; ファイルのコンテキストメニュー設定
         RegWrite, REG_SZ, HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\GDContextMenu, , %prefix%{BB02B294-8425-42E5-983F-41A1FA970CD6}
         RegWrite, REG_SZ, HKEY_CLASSES_ROOT\*\shellex\ContextMenuHandlers\DriveFS 28 or later, , %prefix%{EE15C2BD-CECB-49F8-A113-CA1BFC528F5B}
     }
 }
 #IfWinActive
+
+; スクリプト停止時は有効化
+OnExit("exitFunc")
 
 ; Reverts back to enabling drive on exit.
 exitFunc() {
