@@ -5,12 +5,12 @@ from pathlib import Path
 class CopytreeIgnore(object):
     """
     Utility for shutil.copytree(), 'ignore' argument.
-    exclude() and include() can be used instead of shutil.ignore_patterns().
+    can be used instead of shutil.ignore_patterns().
     """
 
     def __init__(self, in_pattern=None, ex_pattern=None):
         if in_pattern:
-            pass
+            self.set_include_pattern(in_pattern)
         if ex_pattern:
             self.set_exclude_pattern(ex_pattern)
 
@@ -39,6 +39,26 @@ class CopytreeIgnore(object):
         return result
 
     def include(self, directory, files):
+        result = []
+        cwd = Path(directory)
+        for ptn in self.in_patterns:
+            for file_path in cwd.glob(ptn):
+                result.append(file_path.name)
+        return result
+
+    def include_and_exclude(self, directory, files):
+        """
+        include patterns are prefered to exclude patterns.
+        """
+        result = []
+        cwd = Path(directory)
+        for ptn in self.in_patterns:
+            for file_path in cwd.glob(ptn):
+                # TODO: excludeパターンと一致していれば除外
+                pass
+
+    def _is_pattern_match(self, dir_path):
+        # TODO: パターンと一致確認
         pass
 
 
