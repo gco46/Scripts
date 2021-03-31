@@ -1,5 +1,8 @@
 import shutil
 from pathlib import Path
+import sys
+import time
+import codecs
 
 
 class CopytreeIgnore(object):
@@ -7,6 +10,7 @@ class CopytreeIgnore(object):
     Utility for shutil.copytree(), 'ignore' argument.
     can be used instead of shutil.ignore_patterns().
     """
+    log_path = Path().home() / "out.log"
 
     def __init__(self, in_pattern=None, ex_pattern=None):
         if in_pattern:
@@ -31,20 +35,37 @@ class CopytreeIgnore(object):
             print(ptn, "is not iterable")
 
     def exclude(self, directory, files):
-        result = []
         cwd = Path(directory)
+        # 標準出力
+        print('now copying', str(cwd))
+        # ファイル出力
+        print('now copying', str(cwd), file=codecs.open(
+            str(self.log_path), mode="a"))
+        while True:
+            disk_usage_gb = shutil.disk_usage('C:/').free / 1024 / 1024 / 1024
+            if disk_usage_gb > 20:
+                break
+            print('wait for GDrive Sync...: free is {:>6.2f} GB'.format(
+                disk_usage_gb))
+            # wait for an half hour
+            time.sleep(3600)
+
+        # ignore file/directories list
+        ignores = []
         for ptn in self.ex_patterns:
             for file_path in cwd.glob(ptn):
-                result.append(file_path.name)
-        return result
+                ignores.append(file_path.name)
+
+        return ignores
 
     def include(self, directory, files):
-        result = []
+        # TODO: メソッド修正(excludeと同じになっている)
+        ignores = []
         cwd = Path(directory)
         for ptn in self.in_patterns:
             for file_path in cwd.glob(ptn):
-                result.append(file_path.name)
-        return result
+                ignores.append(file_path.name)
+        return ignores
 
     def include_and_exclude(self, directory, files):
         """
@@ -65,12 +86,14 @@ class CopytreeIgnore(object):
 def main():
     ignore_list = [
         '.svn',
-        'vssver.scc'
+        'vssver.scc',
     ]
-    srs = Path("C:/Workspace/CommonTool/")
-    tgt = Path("C:/Workspace/test/")
-    IgnPtn = CopytreeIgnore(ignore_list)
-    shutil.copytree(srs, tgt, ignore=IgnPtn.exclude)
+    # パスを指定--------------------------------------
+    srs = Path("C:/Workspace/Scripts/scripts/test")
+    dst = Path("C:/Workspace/Scripts/scripts/test2")
+    # ------------------------------------------------
+    IgnPtn = CopytreeIgnore(ex_pattern=ignore_list)
+    shutil.copytree(srs, dst, ignore=IgnPtn.exclude, dirs_exist_ok=True)
 
 
 if __name__ == "__main__":
