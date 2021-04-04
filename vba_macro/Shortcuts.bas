@@ -60,15 +60,6 @@ Attribute ShowOneBook.VB_ProcData.VB_Invoke_Func = "S\n14"
 End Sub
 
 
-Sub ReDrawBorders()
-Attribute ReDrawBorders.VB_ProcData.VB_Invoke_Func = "q\n14"
-'
-' ‘I‘ğ”ÍˆÍ‚ÌƒZƒ‹‚ğˆÍ‚¤‚æ‚¤‚ÉŒrü‚ğˆø‚­ (ctrl + q)
-'
-    executeMacro "redraw_borders"
-End Sub
-
-
 Sub NoPaint()
 Attribute NoPaint.VB_ProcData.VB_Invoke_Func = "N\n14"
 '
