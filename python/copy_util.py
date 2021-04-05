@@ -1,8 +1,9 @@
 import shutil
 from pathlib import Path
-import sys
 import time
 import codecs
+
+from typing import List
 
 
 class CopytreeIgnore(object):
@@ -10,7 +11,7 @@ class CopytreeIgnore(object):
     Utility for shutil.copytree(), 'ignore' argument.
     can be used instead of shutil.ignore_patterns().
     """
-    log_path = Path().home() / "out.log"
+    log_path: Path = Path().home() / "out.log"
 
     def __init__(self, in_pattern=None, ex_pattern=None):
         if in_pattern:
@@ -18,24 +19,29 @@ class CopytreeIgnore(object):
         if ex_pattern:
             self.set_exclude_pattern(ex_pattern)
 
-    def set_include_pattern(self, ptn):
+    def set_include_pattern(self, ptn) -> None:
         try:
             # check whether ptn is iterable
             some_iterator = iter(ptn)
-            self.in_patterns = tuple(ptn)
+            self.in_patterns: List[str] = list(ptn)
         except TypeError:
             print(ptn, "is not iterable")
 
-    def set_exclude_pattern(self, ptn):
+    def set_exclude_pattern(self, ptn) -> None:
         try:
             # check whether ptn is iterable
             some_iterator = iter(ptn)
-            self.ex_patterns = tuple(ptn)
+            self.ex_patterns: List[str] = list(ptn)
         except TypeError:
             print(ptn, "is not iterable")
 
-    def exclude(self, directory, files):
-        cwd = Path(directory)
+    def exclude(self, directory: str, files: List[str]) -> List[str]:
+        """
+        callback function for shutil.copytree() 'ignore' argument.
+        copytree() only copies that doesn't match glob patterns in
+        'ex_patterns'.
+        """
+        cwd: Path = Path(directory)
         # 標準出力
         print('now copying', str(cwd))
         # ファイル出力
@@ -51,32 +57,44 @@ class CopytreeIgnore(object):
             time.sleep(3600)
 
         # ignore file/directories list
-        ignores = []
+        ignores: set = set()
         for ptn in self.ex_patterns:
             for file_path in cwd.glob(ptn):
-                ignores.append(file_path.name)
+                ignores.add(file_path.name)
 
-        return ignores
+        return list(ignores)
 
-    def include(self, directory, files):
-        # TODO: メソッド修正(excludeと同じになっている)
-        ignores = []
+    def include(self, directory: str, files: List[str]) -> List[str]:
+        """
+        callback function for shutil.copytree() 'ignore' argument.
+        copytree() only copies that matches glob patterns in 'in_patterns'.
+        """
+        includes: set = set()
         cwd = Path(directory)
         for ptn in self.in_patterns:
             for file_path in cwd.glob(ptn):
-                ignores.append(file_path.name)
-        return ignores
+                includes.add(file_path.name)
+        ignores: set = set(files)
 
-    def include_and_exclude(self, directory, files):
+        return list(ignores - includes)
+
+    def include_and_exclude(self, directory: str, files: List[str]) -> List[str]:
         """
+        callback function for shutil.copytree() 'ignore' argument.
         include patterns are prefered to exclude patterns.
         """
-        result = []
+        excludes: set = set()
+        includes: set = set()
         cwd = Path(directory)
+        for ptn in self.ex_patterns:
+            for file_path in cwd.glob(ptn):
+                excludes.add(file_path.name)
         for ptn in self.in_patterns:
             for file_path in cwd.glob(ptn):
-                # TODO: excludeパターンと一致していれば除外
-                pass
+                includes.add(file_path.name)
+        includes = set(files) - includes
+
+        return list(includes | excludes)
 
     def _is_pattern_match(self, dir_path):
         # TODO: パターンと一致確認
@@ -84,7 +102,7 @@ class CopytreeIgnore(object):
 
 
 def main():
-    ignore_list = [
+    in_list = [
         '.svn',
         'vssver.scc',
     ]
@@ -92,8 +110,9 @@ def main():
     srs = Path("C:/Workspace/Scripts/scripts/test")
     dst = Path("C:/Workspace/Scripts/scripts/test2")
     # ------------------------------------------------
-    IgnPtn = CopytreeIgnore(ex_pattern=ignore_list)
-    shutil.copytree(srs, dst, ignore=IgnPtn.exclude, dirs_exist_ok=True)
+    IgnPtn = CopytreeIgnore(in_pattern=in_list)
+    shutil.copytree(srs, dst, ignore=IgnPtn.include_and_exclude,
+                    dirs_exist_ok=True)
 
 
 if __name__ == "__main__":
