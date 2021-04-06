@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 import codecs
 
-from typing import List
+from typing import List, Iterable
 
 
 class CopytreeIgnore(object):
@@ -13,24 +13,24 @@ class CopytreeIgnore(object):
     """
     log_path: Path = Path().home() / "out.log"
 
-    def __init__(self, in_pattern=None, ex_pattern=None):
-        if in_pattern:
-            self.set_include_pattern(in_pattern)
-        if ex_pattern:
-            self.set_exclude_pattern(ex_pattern)
+    def __init__(self,
+                 in_patterns: Iterable[str] = [],
+                 ex_patterns: Iterable[str] = []):
+        self._set_include_pattern(in_patterns)
+        self._set_exclude_pattern(ex_patterns)
 
-    def set_include_pattern(self, ptn) -> None:
+    def _set_include_pattern(self, ptn: Iterable[str]) -> None:
         try:
             # check whether ptn is iterable
-            some_iterator = iter(ptn)
+            iter(ptn)
             self.in_patterns: List[str] = list(ptn)
         except TypeError:
             print(ptn, "is not iterable")
 
-    def set_exclude_pattern(self, ptn) -> None:
+    def _set_exclude_pattern(self, ptn: Iterable[str]) -> None:
         try:
             # check whether ptn is iterable
-            some_iterator = iter(ptn)
+            iter(ptn)
             self.ex_patterns: List[str] = list(ptn)
         except TypeError:
             print(ptn, "is not iterable")
@@ -51,9 +51,8 @@ class CopytreeIgnore(object):
             disk_usage_gb = shutil.disk_usage('C:/').free / 1024 / 1024 / 1024
             if disk_usage_gb > 20:
                 break
-            print('wait for GDrive Sync...: free is {:>6.2f} GB'.format(
-                disk_usage_gb))
-            # wait for an half hour
+            print('wait for GDrive Sync...: free is {:>6.2f} GB'.format(disk_usage_gb))
+            # wait for an hour
             time.sleep(3600)
 
         # ignore file/directories list
@@ -86,13 +85,18 @@ class CopytreeIgnore(object):
         excludes: set = set()
         includes: set = set()
         cwd = Path(directory)
+        if self.in_patterns:
+            for ptn in self.in_patterns:
+                for file_path in cwd.glob(ptn):
+                    includes.add(file_path.name)
+            includes = set(files) - includes
+        else:
+            # if in_patterns is empty, all files and directories become target
+            # so ignore file is none
+            includes = set([])
         for ptn in self.ex_patterns:
             for file_path in cwd.glob(ptn):
                 excludes.add(file_path.name)
-        for ptn in self.in_patterns:
-            for file_path in cwd.glob(ptn):
-                includes.add(file_path.name)
-        includes = set(files) - includes
 
         return list(includes | excludes)
 
@@ -102,15 +106,16 @@ class CopytreeIgnore(object):
 
 
 def main():
-    in_list = [
+    ex_list = [
         '.svn',
         'vssver.scc',
+        'Shortcut*'
     ]
-    # パスを指定--------------------------------------
-    srs = Path("C:/Workspace/Scripts/scripts/test")
-    dst = Path("C:/Workspace/Scripts/scripts/test2")
+    # decide path ------------------------------------
+    srs = Path("C:/Workspace/Scripts/scripts/vba_macro")
+    dst = Path("C:/Workspace/Scripts/scripts/test")
     # ------------------------------------------------
-    IgnPtn = CopytreeIgnore(in_pattern=in_list)
+    IgnPtn = CopytreeIgnore(ex_patterns=iter(ex_list))
     shutil.copytree(srs, dst, ignore=IgnPtn.include_and_exclude,
                     dirs_exist_ok=True)
 
