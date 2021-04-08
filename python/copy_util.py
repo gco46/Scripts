@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 import codecs
 
-from typing import List, Iterable, Callable, Optional
+from typing import List, Iterable, Callable, Optional, Union
 
 
 class CopytreeIgnore(object):
@@ -14,15 +14,19 @@ class CopytreeIgnore(object):
       - include
       - include_and_exclude
     """
-    DirCall = Callable[[str, List[str]], None]
+    DirCall = Union[
+        Callable[[str, List[str]], None],
+        Callable[[str, List[str]], List[str]]
+    ]
 
     def __init__(self,
                  in_patterns: Iterable[str] = [],
                  ex_patterns: Iterable[str] = [],
-                 callback: Optional[DirCall] = None):
+                 *callbacks: DirCall):
         self._set_include_pattern(in_patterns)
         self._set_exclude_pattern(ex_patterns)
-        self._set_callback(callback)
+        if callbacks:
+            self._set_callback(list(callbacks))
 
     def _set_include_pattern(self, ptn: Iterable[str]) -> None:
         try:
@@ -40,8 +44,8 @@ class CopytreeIgnore(object):
         except TypeError:
             print(ptn, "is not iterable")
 
-    def _set_callback(self, callback: Optional[DirCall]) -> None:
-        self.callback = callback
+    def _set_callback(self, callbacks: Optional[List[DirCall]]) -> None:
+        self.beforeDirCopy = callbacks
 
     def ignore_exclude(self, directory: str, files: List[str]) -> List[str]:
         """
@@ -49,9 +53,6 @@ class CopytreeIgnore(object):
         copytree() only copies that doesn't match glob patterns in
         'ex_patterns'.
         """
-        if self.callback:
-            self.callback(directory, files)
-
         ignores: set = self._create_exclude_set(directory)
         return list(ignores)
 
@@ -68,10 +69,14 @@ class CopytreeIgnore(object):
         callback function for shutil.copytree() 'ignore' argument.
         in_patterns and ex_patterns are used to create ignore list.
         """
+        if self.beforeDirCopy:
+            # TODO: コールバック関数実行
+            pass
+
         in_ignores: set = set()
         ex_ignores: set = set()
         if self.in_patterns:
-            # if in_patterns is empty, all files and directories become target
+            # if in_patterns is empty, all files and directories become targets
             # so ignore file is none
             in_ignores = self._create_include_set(directory, files)
         ex_ignores = self._create_exclude_set(directory)
@@ -133,7 +138,7 @@ def main():
     # ------------------------------------------------
     IgnPtn = CopytreeIgnore(ex_patterns=ex_list,
                             in_patterns=in_list,
-                            callback=wait_for_gdrive_sync)
+                            callbacks=wait_for_gdrive_sync)
     shutil.copytree(srs, dst, ignore=IgnPtn.ignore,
                     dirs_exist_ok=True)
 
