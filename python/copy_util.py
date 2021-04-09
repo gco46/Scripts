@@ -22,11 +22,18 @@ class CopytreeIgnore(object):
     def __init__(self,
                  in_patterns: Iterable[str] = [],
                  ex_patterns: Iterable[str] = [],
-                 *callbacks: DirCall):
+                 callbacks: Optional[List[DirCall]] = None):
+        """
+        in_patterns: include file/directory glob patterns
+        ex_patterns: exclude file/directory glob patterns
+        callbacks: optional callback function, which is called every recursive search
+                per directory.
+                callback can return ignore file list called 'optional ignore list'
+                if optional ignore lists are set, ignore() method gives them copytree()
+        """
         self._set_include_pattern(in_patterns)
         self._set_exclude_pattern(ex_patterns)
-        if callbacks:
-            self._set_callback(list(callbacks))
+        self._set_callback(callbacks)
 
     def _set_include_pattern(self, ptn: Iterable[str]) -> None:
         try:
@@ -53,26 +60,25 @@ class CopytreeIgnore(object):
         copytree() only copies that doesn't match glob patterns in
         'ex_patterns'.
         """
+        opt_ignores: set = self._create_optional_set(directory, files)
         ignores: set = self._create_exclude_set(directory)
-        return list(ignores)
+        return list(ignores | opt_ignores)
 
     def ignore_include(self, directory: str, files: List[str]) -> List[str]:
         """
         callback function for shutil.copytree() 'ignore' argument.
         copytree() only copies that matches glob patterns in 'in_patterns'.
         """
+        opt_ignores: set = self._create_optional_set(directory, files)
         ignores: set = self._create_include_set(directory, files)
-        return list(ignores)
+        return list(ignores | opt_ignores)
 
     def ignore(self, directory: str, files: List[str]) -> List[str]:
         """
         callback function for shutil.copytree() 'ignore' argument.
         in_patterns and ex_patterns are used to create ignore list.
         """
-        if self.beforeDirCopy:
-            # TODO: コールバック関数実行
-            pass
-
+        opt_ignores: set = self._create_optional_set(directory, files)
         in_ignores: set = set()
         ex_ignores: set = set()
         if self.in_patterns:
@@ -81,7 +87,21 @@ class CopytreeIgnore(object):
             in_ignores = self._create_include_set(directory, files)
         ex_ignores = self._create_exclude_set(directory)
 
-        return list(in_ignores | ex_ignores)
+        return list(in_ignores | ex_ignores | opt_ignores)
+
+    def _create_optional_set(self, dir_path: str, files: List[str]) -> set:
+        """
+        create optional ignore set by callback function
+        """
+        ignores: set = set()
+        if self.beforeDirCopy:
+            ignore_list: List[str] = []
+            for func in self.beforeDirCopy:
+                tmp_ignore_list: Optional[List[str]] = func(dir_path, files)
+                if tmp_ignore_list:
+                    ignore_list += tmp_ignore_list
+            ignores = set(ignore_list)
+        return ignores
 
     def _create_exclude_set(self, dir_path: str) -> set:
         cwd: Path = Path(dir_path)
@@ -124,13 +144,16 @@ def wait_for_gdrive_sync(directory: str, files: List[str]) -> None:
 
 
 def main():
-    ex_list = [
+    ex_list: List[str] = [
         '.svn',
         'vssver.scc',
         'Shortcut*'
     ]
-    in_list = [
+    in_list: List[str] = [
         '*.bas'
+    ]
+    cb_list: List[CopytreeIgnore.DirCall] = [
+        wait_for_gdrive_sync
     ]
     # decide path ------------------------------------
     srs = Path("C:/Workspace/Scripts/scripts/vba_macro")
@@ -138,7 +161,7 @@ def main():
     # ------------------------------------------------
     IgnPtn = CopytreeIgnore(ex_patterns=ex_list,
                             in_patterns=in_list,
-                            callbacks=wait_for_gdrive_sync)
+                            callbacks=cb_list)
     shutil.copytree(srs, dst, ignore=IgnPtn.ignore,
                     dirs_exist_ok=True)
 
