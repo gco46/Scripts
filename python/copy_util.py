@@ -10,9 +10,6 @@ class CopytreeIgnore(object):
     """
     Utility for shutil.copytree(), 'ignore' argument.
     following methods can be used instead of shutil.ignore_patterns().
-      - exclude
-      - include
-      - include_and_exclude
     """
     DirCall = Union[
         Callable[[str, List[str]], None],
@@ -76,7 +73,8 @@ class CopytreeIgnore(object):
     def ignore(self, directory: str, files: List[str]) -> List[str]:
         """
         callback function for shutil.copytree() 'ignore' argument.
-        in_patterns and ex_patterns are used to create ignore list.
+        copytree() only copies that matches glob patterns in 'in_patterns',
+        excluding 'ex_patterns'.
         """
         opt_ignores: set = self._create_optional_set(directory, files)
         in_ignores: set = set()
