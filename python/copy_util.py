@@ -151,13 +151,23 @@ def ignore_duplicate_dir(directory: str, files: List[str]) -> List[str]:
     # so skip for performance
     if len(files) > 30:
         return ignores
-    files = sorted(files)
-    target_dir = Path(directory)
-    for idx in range(len(files) - 1):
-        file_a: Path = target_dir / Path(files[idx])
-        file_b: Path = target_dir / Path(files[idx+1])
-        if (file_a.stem == file_b.stem) and file_a.is_dir():
-            ignores.append(files[idx])
+    compressed_file_list: List[str] = [
+        '*.7z',
+        '*.zip'
+    ]
+    # to determine whether directory or not, get absolute path
+    target_dir: Path = Path(directory).resolve()
+    for ptn in compressed_file_list:
+        # if compressed file exists, directory whose name is same is added
+        # to ignore list
+        for cmp_file in target_dir.glob(ptn):
+            if cmp_file.stem in files:
+                idx: int = files.index(cmp_file.stem)
+                tmp_path: Path = target_dir / files[idx]
+                if tmp_path.is_dir():
+                    ignores.append(files[idx])
+            else:
+                continue
 
     return ignores
 
@@ -169,7 +179,6 @@ def main():
         'Shortcut*'
     ]
     in_list: List[str] = [
-        '*.bas',
     ]
     cb_list: List[CopytreeIgnore.DirCall] = [
         wait_for_gdrive_sync,
