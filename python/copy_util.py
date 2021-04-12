@@ -102,18 +102,19 @@ class CopytreeIgnore(object):
         return ignores
 
     def _create_exclude_set(self, dir_path: str) -> set:
-        cwd: Path = Path(dir_path)
+        # directory path which contains target files
+        parent_dir: Path = Path(dir_path)
         ignores: set = set()
         for ptn in self.ex_patterns:
-            for file_path in cwd.glob(ptn):
+            for file_path in parent_dir.glob(ptn):
                 ignores.add(file_path.name)
         return ignores
 
     def _create_include_set(self, dir_path: str, files: List[str]) -> set:
         includes: set = set()
-        cwd: Path = Path(dir_path)
+        parent_dir: Path = Path(dir_path)
         for ptn in self.in_patterns:
-            for file_path in cwd.glob(ptn):
+            for file_path in parent_dir.glob(ptn):
                 includes.add(file_path.name)
         ignores: set = set(files) - includes
         return ignores
@@ -125,20 +126,40 @@ def wait_for_gdrive_sync(directory: str, files: List[str]) -> None:
     """
     # save out.log in home directory
     log_path: Path = Path().home() / 'out.log'
-    cwd: Path = Path(directory)
+    parent_dir: Path = Path(directory)
     # print next copy directory
-    print('now copying', str(cwd))
+    print('now copying', str(parent_dir))
     # print next copy directory (file output)
-    print('now copying', str(cwd), file=codecs.open(str(log_path), mode="a"))
+    print('now copying', str(parent_dir), file=codecs.open(str(log_path), mode="a"))
     while True:
         # if C drive(default FileStream cache) capacity is less than 20GB,
         # wait for google drive sync and delete cache file.
-        disk_usage_gb = shutil.disk_usage('C:/').free / 1024 / 1024 / 1024
+        disk_usage_gb = shutil.disk_usage(parent_dir.home()).free / 1024 / 1024 / 1024
         if disk_usage_gb > 20:
             break
         print('wait for GDrive Sync...: free is {:>6.2f} GB'.format(disk_usage_gb))
         # wait for an hour
         time.sleep(3600)
+
+
+def ignore_duplicate_dir(directory: str, files: List[str]) -> List[str]:
+    """
+    ignore duplicate directory, if compressed file exists in same directory.
+    """
+    ignores: List[str] = []
+    # large directory rarely include compressed file,
+    # so skip for performance
+    if len(files) > 30:
+        return ignores
+    files = sorted(files)
+    target_dir = Path(directory)
+    for idx in range(len(files) - 1):
+        file_a: Path = target_dir / Path(files[idx])
+        file_b: Path = target_dir / Path(files[idx+1])
+        if (file_a.stem == file_b.stem) and file_a.is_dir():
+            ignores.append(files[idx])
+
+    return ignores
 
 
 def main():
@@ -148,14 +169,15 @@ def main():
         'Shortcut*'
     ]
     in_list: List[str] = [
-        '*.bas'
+        '*.bas',
     ]
     cb_list: List[CopytreeIgnore.DirCall] = [
-        wait_for_gdrive_sync
+        wait_for_gdrive_sync,
+        ignore_duplicate_dir
     ]
     # decide path ------------------------------------
-    srs = Path("C:/Workspace/Scripts/scripts/vba_macro")
-    dst = Path("C:/Workspace/Scripts/scripts/test")
+    srs = Path("vba_macro/")
+    dst = Path("test/")
     # ------------------------------------------------
     IgnPtn = CopytreeIgnore(ex_patterns=ex_list,
                             in_patterns=in_list,
