@@ -78,6 +78,15 @@ Attribute YellowPaint.VB_ProcData.VB_Invoke_Func = "Y\n14"
 End Sub
 
 
+Sub DrawLatticeLine()
+Attribute DrawLatticeLine.VB_ProcData.VB_Invoke_Func = "q\n14"
+'
+' 選択セルに格子状の罫線を引く（ctrl + q）
+'
+    executeMacro "draw_lattice_line"
+End Sub
+
+
 Sub AutoFitMergedCellsHeight()
 Attribute AutoFitMergedCellsHeight.VB_ProcData.VB_Invoke_Func = "R\n14"
 '

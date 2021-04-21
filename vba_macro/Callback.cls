@@ -11,7 +11,7 @@ Option Explicit
 
 ' fit_merged_cells_height() íËêî
 ' é©ìÆí≤êÆéûÉ}Å[ÉWÉì[px]
-Private Const HEIGHT_MERGIN = 3
+Private Const HEIGHT_MERGIN = 0
 
 
 Sub show_multi_book()
@@ -21,46 +21,6 @@ End Sub
 
 Sub show_one_book()
     ActiveWindow.WindowState = xlMaximized
-End Sub
-
-
-Sub redraw_borders()
-    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
-    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
-    Selection.Borders(xlEdgeLeft).LineStyle = xlNone
-    Selection.Borders(xlEdgeTop).LineStyle = xlNone
-    Selection.Borders(xlEdgeBottom).LineStyle = xlNone
-    Selection.Borders(xlEdgeRight).LineStyle = xlNone
-    Selection.Borders(xlInsideVertical).LineStyle = xlNone
-    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
-    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
-    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
-    With Selection.Borders(xlEdgeLeft)
-        .LineStyle = xlContinuous
-        .ColorIndex = 0
-        .TintAndShade = 0
-        .Weight = xlThin
-    End With
-    With Selection.Borders(xlEdgeTop)
-        .LineStyle = xlContinuous
-        .ColorIndex = 0
-        .TintAndShade = 0
-        .Weight = xlThin
-    End With
-    With Selection.Borders(xlEdgeBottom)
-        .LineStyle = xlContinuous
-        .ColorIndex = 0
-        .TintAndShade = 0
-        .Weight = xlThin
-    End With
-    With Selection.Borders(xlEdgeRight)
-        .LineStyle = xlContinuous
-        .ColorIndex = 0
-        .TintAndShade = 0
-        .Weight = xlThin
-    End With
-    Selection.Borders(xlInsideVertical).LineStyle = xlNone
-    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
 End Sub
 
 
@@ -83,6 +43,10 @@ Sub paint_yellow()
     End With
 End Sub
 
+
+Sub draw_lattice_line()
+    Selection.Borders.LineStyle = True
+End Sub
 
 Sub fit_merged_cells_height()
     Dim margin                  As Integer
