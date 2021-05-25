@@ -95,6 +95,8 @@ vk1D & i::
         Send, +{Up}
     }else if GetKeyState("ctrl", "P"){
         Send, ^{Up}
+    }else if GetKeyState("alt", "P"){
+        Send, !{Up}
     }else{
         Send, {Up}
     }
