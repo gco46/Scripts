@@ -113,3 +113,12 @@ Attribute PasteWithoutBlankRowCells.VB_ProcData.VB_Invoke_Func = "V\n14"
 '
     executeMacro "paste_without_blank_row_cells"
 End Sub
+
+Sub ClearInsideBorders()
+Attribute ClearInsideBorders.VB_ProcData.VB_Invoke_Func = "Q\n14"
+'
+' 選択セルの内部罫線のみクリアする (ctrl + shift + )
+'
+
+    executeMacro "clear_inside_border"
+End Sub

@@ -48,6 +48,11 @@ Sub draw_lattice_line()
     Selection.Borders.LineStyle = True
 End Sub
 
+Sub clear_inside_border()
+    Selection.Borders(xlInsideVertical).LineStyle = xlNone
+    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
+End Sub
+
 Sub fit_merged_cells_height()
     Dim margin                  As Integer
     Dim r                       As Range
