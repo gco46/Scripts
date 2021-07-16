@@ -45,7 +45,7 @@ End Sub
 Sub ShowMultiBook()
 Attribute ShowMultiBook.VB_ProcData.VB_Invoke_Func = "A\n14"
 '
-' 開いているブックを横に並べて表示 (ctrl + shift + a)
+' 開いているブックを横に並べて表示
 '
     executeMacro "show_multi_book"
 End Sub
@@ -54,7 +54,7 @@ End Sub
 Sub ShowOneBook()
 Attribute ShowOneBook.VB_ProcData.VB_Invoke_Func = "S\n14"
 '
-' アクティブなブックを全画面表示 (ctrl + shift + s)
+' アクティブなブックを全画面表示
 '
     executeMacro "show_one_book"
 End Sub
@@ -117,8 +117,35 @@ End Sub
 Sub ClearInsideBorders()
 Attribute ClearInsideBorders.VB_ProcData.VB_Invoke_Func = "Q\n14"
 '
-' 選択セルの内部罫線のみクリアする (ctrl + shift + )
+' 選択セルの内部罫線のみクリアする (ctrl + shift + q)
 '
 
     executeMacro "clear_inside_border"
+End Sub
+
+Sub AlignAndDistributeV()
+Attribute AlignAndDistributeV.VB_ProcData.VB_Invoke_Func = "A\n14"
+'
+' 選択中のシェイプを左右中央揃え&上下に整列 (ctrl + shift + a)
+'
+
+    executeMacro "aligne_and_distribute_v"
+End Sub
+
+Sub AlignAndDistributeH()
+Attribute AlignAndDistributeH.VB_ProcData.VB_Invoke_Func = "S\n14"
+'
+' 選択中のシェイプを上下中央揃え&左右に整列 (ctrl + shift + s)
+'
+
+    executeMacro "aligne_and_distribute_h"
+End Sub
+
+Sub ToggleShapeGroup()
+Attribute ToggleShapeGroup.VB_ProcData.VB_Invoke_Func = "G\n14"
+'
+' 選択中のシェイプをグループ化/グループ解除する (ctrl + shift + g)
+'
+
+    executeMacro "toggle_shape_group"
 End Sub

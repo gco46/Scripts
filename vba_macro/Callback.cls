@@ -53,6 +53,34 @@ Sub clear_inside_border()
     Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
 End Sub
 
+Sub aligne_and_distribute_v()
+    If VarType(Selection) <> vbObject Then
+        Exit Sub
+    End If
+    Selection.ShapeRange.Align msoAlignCenters, msoFalse
+    Selection.ShapeRange.Distribute msoDistributeVertically, msoFalse
+End Sub
+
+Sub aligne_and_distribute_h()
+    If VarType(Selection) <> vbObject Then
+        Exit Sub
+    End If
+    Selection.ShapeRange.Align msoAlignMiddles, msoFalse
+    Selection.ShapeRange.Distribute msoDistributeHorizontally, msoFalse
+End Sub
+
+Sub toggle_shape_group()
+    If VarType(Selection) <> vbObject Then
+        Exit Sub
+    End If
+    
+    If Selection.ShapeRange.Type = msoGroup Then
+        Selection.ShapeRange.Ungroup.Select
+    Else
+        Selection.ShapeRange.Group.Select
+    End If
+End Sub
+
 Sub fit_merged_cells_height()
     Dim margin                  As Integer
     Dim r                       As Range
