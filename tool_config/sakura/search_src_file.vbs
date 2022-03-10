@@ -82,12 +82,6 @@ function match_srcfile(file_name, pattern)
 	is_src_file = is_tgt_file(extension)
 
 	if is_src_file then
-		' 記号(_, .)を除いたパターンマッチを確認する
-		file_name = Replace(file_name, "_", "")
-		file_name = Replace(file_name, ".", "")
-		pattern = Replace(pattern, "_", "")
-		pattern = Replace(pattern, ".", "")
-
 		' 大文字小文字を区別しない(全て小文字で比較)
 		file_name = LCase(file_name)
 		
