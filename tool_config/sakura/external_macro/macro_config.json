@@ -1,0 +1,12 @@
+{
+    "project": {
+        "MEB_Apli": {
+            "dir_path": "none",
+            "start_file": "none"
+        },
+        "MEB_Boot": {
+            "dir_path": "none",
+            "start_file": "none"
+        }
+    }
+}
