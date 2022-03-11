@@ -10,6 +10,35 @@ extension_list = Array("c", "h", "s", "asm", "800")
 
 call main
 
+sub main2()
+	' TODO: json設定読込用
+	dim tgt_file_name
+	tgt_file_name = InputBox("Input file name:")
+	if tgt_file_name = "" then
+		exit sub
+	end if
+
+	tgt_file_name = LCase(tgt_file_name)
+
+	dim wsh
+    set wsh = CreateObject("WScript.Shell")
+
+	dim command
+	command = "--command=search"
+	dim tgt_path
+	tgt_path = "--tgt_path=" & Apli_path
+	dim pattern
+	pattern = "--pattern=" & tgt_file_name
+	dim script
+	script = "toggle_src.py"
+	dim tmp_txt
+	tmp_txt = "tmp.txt"
+
+	dim cl_input
+	cl_input = join(arra("python", script, command, tgt_path, pattern, ">", tmp_txt), " ")
+	call wsh.Run(cl_input, 0, True)
+end sub
+
 sub main()
 	dim tgt_dir
 	if InStr(Editor.GetFileName, "Apli") then
