@@ -1,6 +1,9 @@
-from pathlib import Path
 from typing import List
+from typing import Optional
+import sys
+from pathlib import Path
 import argparse
+import re
 
 
 class ToggleSrc():
@@ -26,7 +29,7 @@ class ToggleSrc():
         """
         ソースファイルのトグル実行
         Return:
-            bool: 成功 or 失敗
+            成功 or 失敗
         """
         target = Path(self.tgt_path)
 
@@ -43,7 +46,7 @@ class ToggleSrc():
         """
         ソースファイルを走査し、対象行を変更して上書き保存する
         Args:
-            file (Path): 対象のテキストファイル
+            file: 対象のテキストファイル
         """
         # 対象ソースに含まれない場合はスキップ
         extension: str = file.suffix
@@ -81,10 +84,10 @@ class ToggleSrc():
         """
         対象行をコメントアウト or コメント解除する
         Args:
-            line (str): ファイルから抽出した行
-            ext (str): 対象ファイルの拡張子
+            line: ファイルから抽出した行
+            ext: 対象ファイルの拡張子
         Return:
-            str: コメントアウト or コメント解除した行
+            コメントアウト or コメント解除した行
         """
         if self.code_flag in line:
             result_line = line.replace(ToggleSrc.COMMENT_SET[ext] + self.code_flag, "")
@@ -93,14 +96,94 @@ class ToggleSrc():
         return result_line
 
 
+class SearchSrc():
+    SRC_EXT = [
+        ".c",
+        ".h",
+        ".s",
+        ".asm",
+        ".800",
+    ]
+
+    def __init__(self, tgt_dir: str):
+        self.tgt_dir: Path = Path(tgt_dir)
+        ext_or = "|".join(SearchSrc.SRC_EXT).replace(".", "")
+        self.re_ptn: str = r"/*\.(" + ext_or + ")"
+
+    def search(self, pattern: str) -> Optional[str]:
+        """
+        ファイル名がpatternにマッチするファイルを検索する
+        ヒットしたファイルのうち昇順で先頭のファイルのパスを返す
+        Args:
+            pattern: ファイル名(先頭から部分一致)
+        Return:
+            str: ファイルの絶対パス
+        """
+        if not self.tgt_dir.exists():
+            return None
+        elif pattern == "":
+            return None
+
+        # UNIX系ではファイルパスの大文字小文字区別があるためマッチしない可能性あり
+        # サクラエディタでの使用を想定しているためケアしない
+        hit_files = [p for p in self.tgt_dir.glob("**/" + pattern + "*")
+                     if re.search(self.re_ptn, str(p))]
+
+        if len(hit_files) == 0:
+            return None
+
+        hit_files.sort()
+        return str(hit_files[0])
+
+
+def toggle_src_main(tgt_path: str):
+    TglObj = ToggleSrc(tgt_path)
+    succeed = TglObj.exe_toggle()
+    if succeed:
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
+
+def search_src_main(tgt_path: str, pattern: str):
+    SearchObj = SearchSrc(tgt_path)
+    path = SearchObj.search(pattern)
+    if path is None:
+        sys.exit(1)
+    else:
+        sys.stdout.write(path)
+        sys.exit(0)
+
+
+class UtilTest():
+    def __init__(self):
+        pass
+
+    def search_src_test(self):
+        sf = SearchSrc("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/")
+        result = sf.search("tas")
+        if result:
+            print(result)
+        else:
+            print("None")
+
+    def toggle_src_test(self):
+        tglobj = ToggleSrc(str(Path("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/")))
+        tglobj.exe_toggle()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("tgt_path", help="target path of file or directory", type=str)
+    parser.add_argument("--command", help="execute command", type=str, default="")
+    parser.add_argument(
+        "--tgt_path", help="target path of file or directory", type=str, default="")
+    parser.add_argument("--pattern", help="search pattern", type=str, default="")
     args = parser.parse_args()
 
-    TglObj = ToggleSrc(args.tgt_path)
-    TglObj.exe_toggle()
-
-    # テスト用
-    # tglobj = ToggleSrc(str(Path("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/")))
-    # tglobj.exe_toggle()
+    if args.command == "toggle":
+        toggle_src_main(args.tgt_path)
+    elif args.command == "search":
+        search_src_main(args.tgt_path, args.pattern)
+    else:
+        pass
+        # search_src_main("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/", "mpc.c")
