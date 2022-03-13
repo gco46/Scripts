@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 import argparse
 import re
+import json
 
 
 class ToggleSrc():
@@ -137,6 +138,21 @@ class SearchSrc():
         return str(hit_files[0])
 
 
+class SakuraJson():
+    JSON_PATH = ""
+
+    def __init__(self):
+        with open(SakuraJson.JSON_PATH, "r") as f:
+            self.json_load: dict = json.load(f)
+
+    def get_project_from_file(self, file_path) -> str:
+        projects = self.json_load["project"]
+        for proj_name in projects.keys():
+            if projects[proj_name]["dir_path"] in file_path:
+                return projects[proj_name]["dir_path"]
+        return ""
+
+
 def toggle_src_main(tgt_path: str):
     TglObj = ToggleSrc(tgt_path)
     succeed = TglObj.exe_toggle()
@@ -146,8 +162,9 @@ def toggle_src_main(tgt_path: str):
         sys.exit(1)
 
 
-def search_src_main(tgt_path: str, pattern: str):
-    SearchObj = SearchSrc(tgt_path)
+def search_src_main(now_opened_file: str, pattern: str):
+    sakura = SakuraJson()
+    SearchObj = SearchSrc(sakura.get_project_from_file(now_opened_file))
     path = SearchObj.search(pattern)
     if path is None:
         sys.exit(1)
@@ -177,14 +194,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--command", help="execute command", type=str, default="")
     parser.add_argument(
-        "--tgt_path", help="target path of file or directory", type=str, default="")
+        "--now_opened", help="now opened file path", type=str, default="")
     parser.add_argument("--pattern", help="search pattern", type=str, default="")
     args = parser.parse_args()
 
     if args.command == "toggle":
-        toggle_src_main(args.tgt_path)
+        toggle_src_main(args.now_opened)
     elif args.command == "search":
-        search_src_main(args.tgt_path, args.pattern)
+        search_src_main(args.now_opened, args.pattern)
     else:
         # テスト用
         search_src_main(

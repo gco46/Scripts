@@ -7,6 +7,10 @@
         "MEB_Boot": {
             "dir_path": "none",
             "start_file": "none"
+        },
+        "sakura_script": {
+            "dir_path": "/Users/kojiro/project/scripts/",
+            "start_file": "search_src_file.vbs"
         }
     }
 }

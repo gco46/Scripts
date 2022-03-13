@@ -13,7 +13,6 @@ extension_list = Array("c", "h", "s", "asm", "800")
 call main2
 
 sub main2()
-	' TODO: json設定読込用
 	dim tgt_file_name
 	tgt_file_name = InputBox("Input file name:")
 	if tgt_file_name = "" then
@@ -27,8 +26,8 @@ sub main2()
 
 	dim command
 	command = "--command=search"
-	dim tgt_path
-	tgt_path = "--tgt_path=" & os_path
+	dim now_opened
+	now_opened = "--now_opened=" & Editor.GetFileName
 	dim pattern
 	pattern = "--pattern=" & tgt_file_name
 	dim script
@@ -40,7 +39,7 @@ sub main2()
 
 	dim cl_input
 	' TODO: RunでのファイルI/Oのオーバーヘッド確認, Execとの比較検討
-	' cl_input = join(array("cmd.exe /c python", script, command, tgt_path, pattern, ">", tmp_txt), " ")
+	' cl_input = join(array("cmd.exe /c python", script, command, now_opened, pattern, ">", tmp_txt), " ")
 	' call wsh.Run(cl_input, 0, True)
 
 	cl_input = join(array("cmd.exe /c python", script, command, tgt_path, pattern), " ")
