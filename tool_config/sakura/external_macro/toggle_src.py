@@ -103,6 +103,7 @@ class SearchSrc():
         ".s",
         ".asm",
         ".800",
+        ".vbs"
     ]
 
     def __init__(self, tgt_dir: str):
@@ -185,5 +186,6 @@ if __name__ == "__main__":
     elif args.command == "search":
         search_src_main(args.tgt_path, args.pattern)
     else:
-        pass
-        # search_src_main("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/", "mpc.c")
+        # テスト用
+        search_src_main(
+            "D:/project/git_root/scripts/tool_config/sakura/external_macro", "open")

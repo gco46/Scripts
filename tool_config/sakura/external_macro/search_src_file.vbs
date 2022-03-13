@@ -3,12 +3,14 @@ Option Explicit
 ' プロジェクトディレクトリ
 const Apli_path = "C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/"
 const Boot_path = "C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Boot/"
+const os_path = "D:/project/git_root/h8-embedded-os/07/os"
 
 ' 対象の拡張子
 dim extension_list
 extension_list = Array("c", "h", "s", "asm", "800")
 
-call main
+' call main
+call main2
 
 sub main2()
 	' TODO: json設定読込用
@@ -26,17 +28,29 @@ sub main2()
 	dim command
 	command = "--command=search"
 	dim tgt_path
-	tgt_path = "--tgt_path=" & Apli_path
+	tgt_path = "--tgt_path=" & os_path
 	dim pattern
 	pattern = "--pattern=" & tgt_file_name
 	dim script
-	script = "toggle_src.py"
+	dim fso
+	set fso = CreateObject("Scripting.FileSystemObject")
+	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "toggle_src.py"
 	dim tmp_txt
 	tmp_txt = "tmp.txt"
 
 	dim cl_input
-	cl_input = join(arra("python", script, command, tgt_path, pattern, ">", tmp_txt), " ")
-	call wsh.Run(cl_input, 0, True)
+	' TODO: RunでのファイルI/Oのオーバーヘッド確認, Execとの比較検討
+	' cl_input = join(array("cmd.exe /c python", script, command, tgt_path, pattern, ">", tmp_txt), " ")
+	' call wsh.Run(cl_input, 0, True)
+
+	cl_input = join(array("cmd.exe /c python", script, command, tgt_path, pattern), " ")
+	dim file_path
+	file_path = wsh.Exec(cl_input).StdOut.ReadLine
+	if file_path <> "" then
+		Editor.FileOpen(file_path)
+	else
+		MsgBox "No file was found."
+	end if
 end sub
 
 sub main()
