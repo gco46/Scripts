@@ -10,14 +10,14 @@ dim extension_list
 extension_list = Array("c", "h", "s", "asm", "800")
 
 ' call main
-call main2
+' call main2
 
-sub main2()
-	dim tgt_file_name
-	tgt_file_name = InputBox("Input file name:")
-	if tgt_file_name = "" then
-		exit sub
-	end if
+sub search_src_file(tgt_file_name)
+	' dim tgt_file_name
+	' tgt_file_name = InputBox("Input file name:")
+	' if tgt_file_name = "" then
+	' 	exit sub
+	' end if
 
 	tgt_file_name = LCase(tgt_file_name)
 
@@ -45,11 +45,12 @@ sub main2()
 	cl_input = join(array("cmd.exe /c python", script, command, tgt_path, pattern), " ")
 	dim file_path
 	file_path = wsh.Exec(cl_input).StdOut.ReadLine
-	if file_path <> "" then
-		Editor.FileOpen(file_path)
-	else
-		MsgBox "No file was found."
-	end if
+	search_src_file = file_path
+	' if file_path <> "" then
+	' 	Editor.FileOpen(file_path)
+	' else
+	' 	MsgBox "No file was found."
+	' end if
 end sub
 
 sub main()
