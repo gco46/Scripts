@@ -1,28 +1,16 @@
 Option Explicit
-' dim fso
-' set fso = CreateObject("Scripting.FileSystemObject")
-' dim vbs_lib
-' vbs_lib = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "search_src_file.vbs"
+dim fso
+set fso = CreateObject("Scripting.FileSystemObject")
+dim vbs_lib
+vbs_lib = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "command.vbs"
 
-' Include(vbs_lib)
+Include(vbs_lib)
 
 call main()
 
 sub main()
-	dim wsh
-    set wsh = CreateObject("WScript.Shell")
-	dim command
-	command = "--command=project"
-
-	dim script
-	dim fso
-	set fso = CreateObject("Scripting.FileSystemObject")
-	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "toggle_src.py"
-	dim cl_input
-	cl_input = join(array("cmd.exe /c python", script, command), " ")
-
 	dim proj_csv
-	proj_csv = wsh.Exec(cl_input).StdOut.ReadLine
+	proj_csv = project_command("")
 	
 	dim message
 	message = replace(proj_csv, ",", vbcr & "  ")
@@ -34,31 +22,13 @@ sub main()
 		exit sub
 	end if
 
-	dim proj_name
-	proj_name = "--proj_name=" & tgt_proj
-	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "toggle_src.py"
-	cl_input = join(array("cmd.exe /c python", script, command, proj_name), " ")
 	dim file_path
-	file_path = wsh.Exec(cl_input).StdOut.ReadLine
+	file_path = project_command(tgt_proj)
 	if file_path <> "" then
 		Editor.FileOpen(file_path)
 	else
 		MsgBox "No file was found."
 	end if
-	' dim tgt_file_name
-	' tgt_file_name = InputBox("Input file name:")
-	' if tgt_file_name = "" then
-	' 	exit sub
-	' end if
-
-	' dim file_path
-	' file_path = search_src_file(tgt_file_name)
-
-	' if file_path <> "" then
-	' 	Editor.FileOpen(file_path)
-	' else
-	' 	MsgBox "No file was found."
-	' end if
 end sub
 
 Function Include(strFile)
