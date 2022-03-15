@@ -154,6 +154,16 @@ class SakuraJson():
                 return projects[proj_name]["dir_path"]
         return ""
 
+    def get_project_list(self) -> List[str]:
+        return list(self.json_load["project"].keys())
+
+    def get_project_info(self, pattern: str) -> List[str]:
+        projects = self.json_load["project"]
+        for proj in projects.keys():
+            if pattern.lower() in proj.lower():
+                return [projects[proj]["dir_path"], projects[proj]["start_file"]]
+        return ["", ""]
+
 
 def toggle_src_main(tgt_path: str):
     TglObj = ToggleSrc(tgt_path)
@@ -173,6 +183,17 @@ def search_src_main(tgt_path: str, pattern: str):
     else:
         sys.stdout.write(path)
         sys.exit(0)
+
+
+def get_project_main(proj_name: str):
+    sakura = SakuraJson()
+    if proj_name == "":
+        csv_proj = ",".join(sakura.get_project_list())
+        sys.stdout.write(csv_proj)
+        sys.exit(0)
+    else:
+        tgt_path, start_file = sakura.get_project_info(proj_name)
+        search_src_main(tgt_path, start_file)
 
 
 class UtilTest():
@@ -198,12 +219,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--tgt_path", help="target project (directory or file)", type=str, default="")
     parser.add_argument("--pattern", help="search pattern", type=str, default="")
+    parser.add_argument("--proj_name", help="project name", type=str, default="")
     args = parser.parse_args()
 
     if args.command == "toggle":
         toggle_src_main(args.tgt_path)
     elif args.command == "search":
         search_src_main(args.tgt_path, args.pattern)
+    elif args.command == "project":
+        get_project_main(args.proj_name)
     else:
         # テスト用
         search_src_main(
