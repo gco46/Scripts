@@ -1,15 +1,15 @@
 {
     "project": {
-        "MEB_Apli": {
-            "dir_path": "none",
-            "start_file": "none"
+        "MEB_App": {
+            "dir_path": "C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli",
+            "start_file": "Sch.c"
         },
         "MEB_Boot": {
-            "dir_path": "none",
-            "start_file": "none"
+            "dir_path": "C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Boot",
+            "start_file": "Sch.c"
         },
         "sakura_script": {
-            "dir_path": "/Users/kojiro/project/scripts/",
+            "dir_path": "D:/project/git_root/scripts/tool_config/sakura/external_macro",
             "start_file": "search_src_file.vbs"
         }
     }

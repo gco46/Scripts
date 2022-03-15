@@ -128,6 +128,8 @@ class SearchSrc():
 
         # UNIX系ではファイルパスの大文字小文字区別があるためマッチしない可能性あり
         # サクラエディタでの使用を想定しているためケアしない
+        # 念の為patternを小文字にしてから検索
+        pattern = pattern.lower()
         hit_files = [p for p in self.tgt_dir.glob("**/" + pattern + "*")
                      if re.search(self.re_ptn, str(p))]
 
@@ -139,16 +141,16 @@ class SearchSrc():
 
 
 class SakuraJson():
-    JSON_PATH = ""
+    JSON_PATH = "C:/Users/R100180806/AppData/Roaming/sakura/macro_config.json"
 
     def __init__(self):
         with open(SakuraJson.JSON_PATH, "r") as f:
             self.json_load: dict = json.load(f)
 
-    def get_project_from_file(self, file_path) -> str:
+    def get_project_from_file(self, tgt_path) -> str:
         projects = self.json_load["project"]
         for proj_name in projects.keys():
-            if projects[proj_name]["dir_path"] in file_path:
+            if projects[proj_name]["dir_path"] in tgt_path:
                 return projects[proj_name]["dir_path"]
         return ""
 
@@ -162,9 +164,9 @@ def toggle_src_main(tgt_path: str):
         sys.exit(1)
 
 
-def search_src_main(now_opened_file: str, pattern: str):
+def search_src_main(tgt_path: str, pattern: str):
     sakura = SakuraJson()
-    SearchObj = SearchSrc(sakura.get_project_from_file(now_opened_file))
+    SearchObj = SearchSrc(sakura.get_project_from_file(tgt_path))
     path = SearchObj.search(pattern)
     if path is None:
         sys.exit(1)
@@ -194,15 +196,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--command", help="execute command", type=str, default="")
     parser.add_argument(
-        "--now_opened", help="now opened file path", type=str, default="")
+        "--tgt_path", help="target project (directory or file)", type=str, default="")
     parser.add_argument("--pattern", help="search pattern", type=str, default="")
     args = parser.parse_args()
 
     if args.command == "toggle":
-        toggle_src_main(args.now_opened)
+        toggle_src_main(args.tgt_path)
     elif args.command == "search":
-        search_src_main(args.now_opened, args.pattern)
+        search_src_main(args.tgt_path, args.pattern)
     else:
         # テスト用
         search_src_main(
-            "D:/project/git_root/scripts/tool_config/sakura/external_macro", "open")
+            "C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/SRV/SCH/Sch.c", "pwric")

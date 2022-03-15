@@ -10,24 +10,23 @@ dim extension_list
 extension_list = Array("c", "h", "s", "asm", "800")
 
 ' call main
-' call main2
+call main2
 
-sub search_src_file(tgt_file_name)
-	' dim tgt_file_name
-	' tgt_file_name = InputBox("Input file name:")
-	' if tgt_file_name = "" then
-	' 	exit sub
-	' end if
+sub main2()
+	dim tgt_file_name
+	tgt_file_name = InputBox("Input file name:")
+	if tgt_file_name = "" then
+		exit sub
+	end if
 
-	tgt_file_name = LCase(tgt_file_name)
 
 	dim wsh
     set wsh = CreateObject("WScript.Shell")
 
 	dim command
 	command = "--command=search"
-	dim now_opened
-	now_opened = "--now_opened=" & Editor.GetFileName
+	dim tgt_path
+	tgt_path = "--tgt_path=" & replace(Editor.GetFileName, "\", "/")
 	dim pattern
 	pattern = "--pattern=" & tgt_file_name
 	dim script
@@ -45,12 +44,11 @@ sub search_src_file(tgt_file_name)
 	cl_input = join(array("cmd.exe /c python", script, command, tgt_path, pattern), " ")
 	dim file_path
 	file_path = wsh.Exec(cl_input).StdOut.ReadLine
-	search_src_file = file_path
-	' if file_path <> "" then
-	' 	Editor.FileOpen(file_path)
-	' else
-	' 	MsgBox "No file was found."
-	' end if
+	if file_path <> "" then
+		Editor.FileOpen(file_path)
+	else
+		MsgBox "No file was found."
+	end if
 end sub
 
 sub main()
