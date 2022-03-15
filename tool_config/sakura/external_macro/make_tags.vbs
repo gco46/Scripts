@@ -11,32 +11,31 @@ call main
 
 
 sub main()
-    dim tgt_dir
-	if InStr(Editor.GetFileName, "Apli") then
-		tgt_dir = Apli_path
-	elseif InStr(Editor.GetFileName, "Boot") Then
-		tgt_dir = Boot_path
-	else
-		MsgBox "Please open source file in registered project."
-		exit sub
-	end if
-
     dim fso 
     set fso = CreateObject("Scripting.FileSystemObject")
 
-    dim py_script
-    py_script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & toggle_src
-
+    dim script
+    script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & toggle_src
     dim wsh
     set wsh = CreateObject("WScript.Shell")
 
     dim command
-    command = "python " & py_script & " " & tgt_dir
+    command = "--command=toggle"
+    dim tgt_path
+    tgt_path = "--tgt_path=" & replace(Editor.GetFileName, "\", "/")
+
+    dim cl_input
+    cl_input = join(array("cmd.exe /c python", script, command, tgt_path), " ")
     ' コマンドプロンプト非表示で同期実行
-    call wsh.Run(command, 0, True)
+    dim is_err
+    is_err = wsh.Run(cl_input, 0, True)
+    if is_err then
+        MsgBox "toggling failed"
+        exit sub
+    end if
     
     Editor.TagMake()
 
-    call wsh.Run(command, 0, True)
+    call wsh.Run(cl_input, 0, True)
     
 end sub

@@ -147,7 +147,7 @@ class SakuraJson():
         with open(SakuraJson.JSON_PATH, "r") as f:
             self.json_load: dict = json.load(f)
 
-    def get_project_from_file(self, tgt_path) -> str:
+    def get_dir_path_from_file(self, tgt_path) -> str:
         projects = self.json_load["project"]
         for proj_name in projects.keys():
             if projects[proj_name]["dir_path"] in tgt_path:
@@ -166,7 +166,8 @@ class SakuraJson():
 
 
 def toggle_src_main(tgt_path: str):
-    TglObj = ToggleSrc(tgt_path)
+    sakura = SakuraJson()
+    TglObj = ToggleSrc(sakura.get_dir_path_from_file(tgt_path))
     succeed = TglObj.exe_toggle()
     if succeed:
         sys.exit(0)
@@ -176,7 +177,7 @@ def toggle_src_main(tgt_path: str):
 
 def search_src_main(tgt_path: str, pattern: str):
     sakura = SakuraJson()
-    SearchObj = SearchSrc(sakura.get_project_from_file(tgt_path))
+    SearchObj = SearchSrc(sakura.get_dir_path_from_file(tgt_path))
     path = SearchObj.search(pattern)
     if path is None:
         sys.exit(1)
@@ -194,23 +195,6 @@ def get_project_main(proj_name: str):
     else:
         tgt_path, start_file = sakura.get_project_info(proj_name)
         search_src_main(tgt_path, start_file)
-
-
-class UtilTest():
-    def __init__(self):
-        pass
-
-    def search_src_test(self):
-        sf = SearchSrc("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/")
-        result = sf.search("tas")
-        if result:
-            print(result)
-        else:
-            print("None")
-
-    def toggle_src_test(self):
-        tglobj = ToggleSrc(str(Path("C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Apli/PJ/")))
-        tglobj.exe_toggle()
 
 
 if __name__ == "__main__":

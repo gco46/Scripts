@@ -7,10 +7,6 @@
         "MEB_Boot": {
             "dir_path": "C:/Workspace/A4_MEB/RV019PP_SRC/trunk/Boot",
             "start_file": "Sch.c"
-        },
-        "sakura_script": {
-            "dir_path": "D:/project/git_root/scripts/tool_config/sakura/external_macro",
-            "start_file": "search_src_file.vbs"
         }
     }
 }
