@@ -128,7 +128,6 @@ class SearchSrc():
 
         # UNIX系ではファイルパスの大文字小文字区別があるためマッチしない可能性あり
         # サクラエディタでの使用を想定しているためケアしない
-        # 念の為patternを小文字にしてから検索
         pattern = pattern.lower()
         hit_files = [p for p in self.tgt_dir.glob("**/" + pattern + "*")
                      if re.search(self.re_ptn, str(p))]

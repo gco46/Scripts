@@ -9,23 +9,23 @@ Include(vbs_lib)
 call main()
 
 sub main()
-    dim tgt_path
-    tgt_path = replace(Editor.GetFileName, "\", "/")
+	dim tgt_path
+	tgt_path = replace(Editor.GetFileName, "\", "/")
 
-    dim is_err
-    is_err = toggle_command(tgt_path)
-    if is_err then
-        MsgBox "toggling failed"
-        exit sub
-    end if
-    
-    Editor.TagMake()
+	dim is_err
+	is_err = toggle_command(tgt_path)
+	if is_err then
+		MsgBox "toggling failed"
+		exit sub
+	end if
+	
+	Editor.TagMake()
 
-    toggle_command(tgt_path)
-    
+	toggle_command(tgt_path)
+	
 end sub
 
-
+' 外部vbsファイルinclude関数--------------------------------
 Function Include(strFile)
 	'strFile：読み込むvbsファイルパス
  

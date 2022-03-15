@@ -3,6 +3,14 @@ Option Explicit
 const SAKURA_UTIL = "sakura_util.py"
 
 function search_command(tgt_path, pattern)
+	' SAKURA_UTILの searchコマンド実行
+	' tgt_path (str): 検索対象フォルダ or ファイルの絶対パス
+	'		ファイルパスが渡された場合はプロジェクト登録されている親フォルダ内を検索する
+	' pattern (str): 探したいファイル名(先頭一致)
+	'
+	' return (str): ファイルの絶対パス
+	' 		該当なしの場合は空文字
+
 	' TODO: RunでのファイルI/Oのオーバーヘッド確認, Execとの比較検討
 
 	dim wsh
@@ -25,6 +33,12 @@ end function
 
 
 function project_command(tgt_proj)
+	' SAKURA_UTILのprojectコマンド実行
+	' tgt_proj (str): 対象プロジェクト名 or 空文字
+	'
+	' return (str): 該当プロジェクトのstart_file絶対パス
+	'		tgt_proj==""の場合はプロジェクト一覧をカンマ区切りで返す
+
 	dim wsh
 	set wsh = CreateObject("WScript.Shell")
 	dim fso
@@ -45,6 +59,10 @@ end function
 
 
 function toggle_command(tgt_path)
+	' SAKURA_UTILのtoggleコマンド実行
+	' tgt_path (str): 対象プロジェクトのフォルダ or ファイル絶対パス
+	' 
+	' return (int): 成功 or 失敗
 	dim wsh
 	set wsh = CreateObject("WScript.Shell")
 	dim fso 

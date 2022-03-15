@@ -6,7 +6,7 @@ vbs_lib = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "command
 
 Include(vbs_lib)
 
-call main
+call main()
 
 sub main()
 	dim tgt_file_name
@@ -29,6 +29,7 @@ sub main()
 end sub
 
 
+' 外部vbsファイルinclude関数--------------------------------
 Function Include(strFile)
 	'strFile：読み込むvbsファイルパス
  

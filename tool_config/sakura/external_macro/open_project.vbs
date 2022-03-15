@@ -10,6 +10,7 @@ call main()
 
 sub main()
 	dim proj_csv
+	' プロジェクト一覧を取得(引数空文字)
 	proj_csv = project_command("")
 	
 	dim message
@@ -31,6 +32,7 @@ sub main()
 	end if
 end sub
 
+' 外部vbsファイルinclude関数--------------------------------
 Function Include(strFile)
 	'strFile：読み込むvbsファイルパス
  
