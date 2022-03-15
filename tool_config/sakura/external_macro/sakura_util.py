@@ -141,7 +141,8 @@ class SearchSrc():
 
 
 class SakuraJson():
-    JSON_PATH = "C:/Users/R100180806/AppData/Roaming/sakura/macro_config.json"
+    import os
+    JSON_PATH: Path = Path(os.path.abspath(__file__)).parent / "macro_config.json"
 
     def __init__(self):
         with open(SakuraJson.JSON_PATH, "r") as f:

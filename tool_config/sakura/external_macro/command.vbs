@@ -1,5 +1,7 @@
 Option Explicit
 
+const SAKURA_UTIL = "sakura_util.py"
+
 function search_command(tgt_path, pattern)
 	' TODO: RunでのファイルI/Oのオーバーヘッド確認, Execとの比較検討
 
@@ -11,7 +13,7 @@ function search_command(tgt_path, pattern)
 	dim command
 	command = "--command=search"
 	dim script
-	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "toggle_src.py"
+	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & SAKURA_UTIL
 	tgt_path = "--tgt_path=" & tgt_path
 	pattern = "--pattern=" & pattern
 
@@ -31,7 +33,7 @@ function project_command(tgt_proj)
 	dim command
 	command = "--command=project"
 	dim script
-	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "toggle_src.py"
+	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & SAKURA_UTIL
 	dim proj_name
 	proj_name = "--proj_name=" & tgt_proj
 
@@ -49,7 +51,7 @@ function toggle_command(tgt_path)
 	set fso = CreateObject("Scripting.FileSystemObject")
 
 	dim script
-	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "toggle_src.py"
+	script = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & SAKURA_UTIL
 	dim command
 	command = "--command=toggle"
 	tgt_path = "--tgt_path=" & tgt_path

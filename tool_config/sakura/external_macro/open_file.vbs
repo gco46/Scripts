@@ -6,30 +6,28 @@ vbs_lib = fso.GetParentFolderName(Editor.ExpandParameter("$I")) & "/" & "command
 
 Include(vbs_lib)
 
-call main()
+call main
 
 sub main()
-	dim proj_csv
-	proj_csv = project_command("")
-	
-	dim message
-	message = replace(proj_csv, ",", vbcr & "  ")
-	message = "Choose project:" & vbcr & "  " & message
-	
-	dim tgt_proj
-	tgt_proj = InputBox(message)
-	if tgt_proj = "" then
+	dim tgt_file_name
+	tgt_file_name = InputBox("Input file name:")
+	if tgt_file_name = "" then
 		exit sub
 	end if
 
+
+	dim tgt_path
+	tgt_path = replace(Editor.GetFileName, "\", "/")
+
 	dim file_path
-	file_path = project_command(tgt_proj)
+	file_path = search_command(tgt_path, tgt_file_name)
 	if file_path <> "" then
 		Editor.FileOpen(file_path)
 	else
 		MsgBox "No file was found."
 	end if
 end sub
+
 
 Function Include(strFile)
 	'strFile：読み込むvbsファイルパス
