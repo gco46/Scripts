@@ -9,20 +9,27 @@ Include(vbs_lib)
 call main()
 
 sub main()
-	dim tgt_path
-	tgt_path = replace(Editor.GetFileName, "\", "/")
-
-	dim is_err
-	is_err = toggle_command(tgt_path)
-	if is_err then
-		MsgBox "toggling failed"
+	dim proj_csv
+	' プロジェクト一覧を取得(引数空文字)
+	proj_csv = project_command("")
+	
+	dim message
+	message = replace(proj_csv, ",", vbcr & "  ")
+	message = "Choose project:" & vbcr & "  " & message
+	
+	dim tgt_proj
+	tgt_proj = InputBox(message)
+	if tgt_proj = "" then
 		exit sub
 	end if
-	
-	Editor.TagMake()
 
-	toggle_command(tgt_path)
-	
+	dim file_path
+	file_path = project_command(tgt_proj)
+	if file_path <> "" then
+		Editor.FileOpen(file_path)
+	else
+		MsgBox "No file was found."
+	end if
 end sub
 
 ' 外部vbsファイルinclude関数--------------------------------

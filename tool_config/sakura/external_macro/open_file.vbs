@@ -9,21 +9,25 @@ Include(vbs_lib)
 call main()
 
 sub main()
+	dim tgt_file_name
+	tgt_file_name = InputBox("Input file name:")
+	if tgt_file_name = "" then
+		exit sub
+	end if
+
+
 	dim tgt_path
 	tgt_path = replace(Editor.GetFileName, "\", "/")
 
-	dim is_err
-	is_err = toggle_command(tgt_path)
-	if is_err then
-		MsgBox "toggling failed"
-		exit sub
+	dim file_path
+	file_path = search_command(tgt_path, tgt_file_name)
+	if file_path <> "" then
+		Editor.FileOpen(file_path)
+	else
+		MsgBox "No file was found."
 	end if
-	
-	Editor.TagMake()
-
-	toggle_command(tgt_path)
-	
 end sub
+
 
 ' 外部vbsファイルinclude関数--------------------------------
 Function Include(strFile)
